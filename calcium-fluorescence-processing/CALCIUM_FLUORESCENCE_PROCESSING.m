@@ -21,7 +21,7 @@ end
 
 if( exist( [ CALCIUM_FLUORESCENCE_file ] , 'file' ) == 2 )
         
-    CALCIUM_FLUORESCENCE_mat = load( [ CALCIUM_FLUORESCENCE_file ] );
+    CALCIUM_FLUORESCENCE_mat = load( [ CALCIUM_FLUORESCENCE_file ] );%%加载文件
     
     
     PRESETS = varargin;
@@ -58,13 +58,15 @@ if( exist( [ CALCIUM_FLUORESCENCE_file ] , 'file' ) == 2 )
             % 
             % fprintf( 1 , [ '> ...' '\n' ] );
             tic;
-            [ sig_dF_F_activity , sig_dF_F_coactivity_threshold , sig_dF_F_coactivity_peaks ] = findSignificantDF_FCoactivity( CALCIUM_FLUORESCENCE_mat.fish.rasterAlltrials );
-            
+            % 只需要到EA所有的列数据
+            EA_ACTIVITY_RASTER_data = CALCIUM_FLUORESCENCE_mat.fish.rasterAlltrials(:, 1:CALCIUM_FLUORESCENCE_mat.fish.SAendFrame);
+            [ sig_dF_F_activity , sig_dF_F_coactivity_threshold , sig_dF_F_coactivity_peaks ] = findSignificantDF_FCoactivity( EA_ACTIVITY_RASTER_data );
+                       
             output_args.activity_raster = sig_dF_F_activity;
             output_args.activity_raster_threshold = sig_dF_F_coactivity_threshold;
             output_args.activity_raster_peaks = sig_dF_F_coactivity_peaks;
             
-            OUTPUT_PATH = [ directory '/' name '_SIMPLE.mat' ];
+            OUTPUT_PATH = [ directory '/' name '_SIMPLE.mat' ];%%命名
             fileID=fopen(OUTPUT_PATH, 'w');
             fclose(fileID);
         
@@ -199,10 +201,13 @@ if( exist( [ CALCIUM_FLUORESCENCE_file ] , 'file' ) == 2 )
         else
             tic;
             data = load('data.mat');
+            %% 2.只需要到EA所有的列数据
+            EA_SPIKE_PROBABILITY_RASTER_data = CALCIUM_FLUORESCENCE_mat.fish.rasterAlltrials(:, 1:CALCIUM_FLUORESCENCE_mat.fish.SAendFrame);
+
+            [ ~ , spike_probability_raster , spike_probability_raster_thresholds , oopsi_deconvolution ] = findDF_FSpikeProbability( EA_SPIKE_PROBABILITY_RASTER_data , data.dT_step , data.calcium_T1_2 );
+            % [ ~ , spike_probability_raster , spike_probability_raster_thresholds , oopsi_deconvolution ] = findDF_FSpikeProbability( CALCIUM_FLUORESCENCE_mat.fish.rasterAlltrials , data.dT_step , data.calcium_T1_2 );
 
 
-            [ ~ , spike_probability_raster , spike_probability_raster_thresholds , oopsi_deconvolution ] = findDF_FSpikeProbability( CALCIUM_FLUORESCENCE_mat.fish.rasterAlltrials , data.dT_step , data.calcium_T1_2 );
-            
             output_args = [];
             output_args.spike_probability_raster = spike_probability_raster;
             output_args.spike_probability_raster_thresholds = spike_probability_raster_thresholds;
@@ -249,7 +254,7 @@ if( exist( [ CALCIUM_FLUORESCENCE_file ] , 'file' ) == 2 )
     
     output_args = NaN;
     
-    fprintf( 1 , [ '>> END PROGRAM' '\n' ] );
+    fprintf( 1 , [ '>> END PROGRAM Successfully' '\n' ] );
     fprintf( 2 , [ '>> END PROGRAM' '\n' ] );
 else
     

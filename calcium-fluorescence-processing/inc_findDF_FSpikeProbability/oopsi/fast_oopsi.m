@@ -131,10 +131,11 @@ end
 
 %% set default model Parameters
 
-
+mad_custom = @(x) median(abs(x - median(x)));
 
 if nargin < 3,          P       = struct;                       end
-if ~isfield(P,'sig'),   P.sig   = mean(mad(F',1)*1.4826);       end
+% if ~isfield(P,'sig'),   P.sig   = mean(mad(F',1)*1.4826);       end
+if ~isfield(P,'sig'),   P.sig   = mean(mad_custom(F')*1.4826);  end
 if ~isfield(P,'gam'),   P.gam   = (1-V.dt/1)*ones(V.Ncells,1);  end
 if ~isfield(P,'lam'),   P.lam   = 10*ones(V.Ncells,1);          end
 if ~isfield(P,'a'),     P.a     = median(F,2);                  end
